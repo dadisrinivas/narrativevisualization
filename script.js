@@ -216,6 +216,10 @@ document.addEventListener("DOMContentLoaded", function() {
         // Filter reviews by selected listing
         const listingReviews = parameters.reviewsData.filter(d => d.listing_id == parameters.selectedListing);
 
+        // Aggregate reviews by date
+        const reviewsByDate = d3.rollup(listingReviews, v => v.length, d => d.date);
+        const nestedReviewsByDate = Array.from(reviewsByDate, ([key, value]) => ({ date: key, value }));
+
         // Set up margins and dimensions
         const margin = { top: 20, right: 20, bottom: 100, left: 60 };
         const width = 800 - margin.left - margin.right;
@@ -227,12 +231,12 @@ document.addEventListener("DOMContentLoaded", function() {
         const y = d3.scaleLinear().rangeRound([height, 0]);
 
         const parseDate = d3.timeParse("%Y-%m-%d");
-        listingReviews.forEach(d => {
+        nestedReviewsByDate.forEach(d => {
             d.date = parseDate(d.date);
         });
 
-        x.domain(d3.extent(listingReviews, d => d.date));
-        y.domain([0, d3.max(listingReviews, d => d.value)]);
+        x.domain(d3.extent(nestedReviewsByDate, d => d.date));
+        y.domain([0, d3.max(nestedReviewsByDate, d => d.value)]);
 
         // Add x-axis
         g.append("g")
@@ -251,12 +255,22 @@ document.addEventListener("DOMContentLoaded", function() {
             .y(d => y(d.value));
 
         g.append("path")
-            .datum(listingReviews)
+            .datum(nestedReviewsByDate)
             .attr("class", "line")
             .attr("fill", "none")
             .attr("stroke", "steelblue")
             .attr("stroke-width", 1.5)
             .attr("d", line);
+
+        // Add points
+        g.selectAll(".dot")
+            .data(nestedReviewsByDate)
+            .enter().append("circle")
+            .attr("class", "dot")
+            .attr("cx", d => x(d.date))
+            .attr("cy", d => y(d.value))
+            .attr("r", 5)
+            .attr("fill", "steelblue");
 
         // Add title
         svg.append("text")
@@ -279,6 +293,6 @@ document.addEventListener("DOMContentLoaded", function() {
             .attr("x", 0 - (height / 2))
             .attr("dy", "1em")
             .style("text-anchor", "middle")
-            .text("Review Count");
+            .text("Number of Reviews");
     }
 });
