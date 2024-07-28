@@ -11,4 +11,9 @@ body {
 #visualization {
     width: 80%;
     height: 600px;
+    border: 1px solid #ccc;
+}
+
+button {
+    margin-top: 20px;
 }
