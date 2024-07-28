@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", function() {
     const scenes = [createScene1, createScene2, createScene3];
     let currentSceneIndex = 0;
-
+    
     const parameters = {
         currentScene: 0,
         data: null,
