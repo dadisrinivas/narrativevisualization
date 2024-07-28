@@ -19,6 +19,9 @@ document.addEventListener("DOMContentLoaded", function() {
         d3.csv("data/neighbourhoods.csv"),
         d3.csv("data/reviews.csv")
     ]).then(function([listings, neighborhoods, reviews]) {
+		console.log(listings)
+		console.log(neighborhoods)
+		console.log(reviews)
         parameters.data = listings;
         parameters.neighborhoodsData = neighborhoods;
         parameters.reviewsData = reviews;
